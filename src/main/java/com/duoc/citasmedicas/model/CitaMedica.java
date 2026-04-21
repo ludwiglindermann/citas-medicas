@@ -1,22 +1,41 @@
 package com.duoc.citasmedicas.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "CITAS_MEDICAS")
 public class CitaMedica {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cita")
+    @SequenceGenerator(name = "seq_cita", sequenceName = "SEQ_CITAS_MEDICAS", allocationSize = 1)
     private Long id;
+
+    @Column(name = "NOMBRE_PACIENTE", nullable = false, length = 100)
     private String nombrePaciente;
+
+    @Column(name = "RUT_PACIENTE", nullable = false, length = 15)
     private String rutPaciente;
+
+    @Column(name = "ESPECIALIDAD", nullable = false, length = 100)
     private String especialidad;
+
+    @Column(name = "NOMBRE_MEDICO", nullable = false, length = 100)
     private String nombreMedico;
+
+    @Column(name = "FECHA", nullable = false, length = 10)
     private String fecha;
+
+    @Column(name = "HORA", nullable = false, length = 5)
     private String hora;
+
+    @Column(name = "ESTADO", nullable = false, length = 20)
     private String estado;
 
     public CitaMedica() {}
 
-    public CitaMedica(Long id, String nombrePaciente, String rutPaciente,
-                      String especialidad, String nombreMedico,
-                      String fecha, String hora, String estado) {
-        this.id = id;
+    public CitaMedica(String nombrePaciente, String rutPaciente, String especialidad,
+                      String nombreMedico, String fecha, String hora, String estado) {
         this.nombrePaciente = nombrePaciente;
         this.rutPaciente = rutPaciente;
         this.especialidad = especialidad;
