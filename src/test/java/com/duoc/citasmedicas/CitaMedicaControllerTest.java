@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -72,5 +73,38 @@ public class CitaMedicaControllerTest {
                 .andExpect(status().isCreated());
 
         verify(service, times(1)).programarCita(any(CitaMedicaDTO.class));
+    }
+
+    @Test
+    @DisplayName("GET /citas/{id} debe retornar una cita con status 200")
+    void testObtenerPorId() throws Exception {
+        // Arrange
+        CitaMedicaDTO dto = new CitaMedicaDTO(
+                1L, "Laura Soto", "12.345.678-9",
+                "Medicina General", "Dr. Andrés Fuentes",
+                "2025-04-01", "09:00", "RESERVADA"
+        );
+        when(service.obtenerPorId(1L)).thenReturn(Optional.of(dto));
+
+        // Act & Assert
+        mockMvc.perform(get("/citas/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).obtenerPorId(1L);
+    }
+
+    @Test
+    @DisplayName("GET /citas/{id} debe retornar 404 cuando no existe")
+    void testObtenerPorIdNoEncontrado() throws Exception {
+        // Arrange
+        when(service.obtenerPorId(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        mockMvc.perform(get("/citas/99")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(service, times(1)).obtenerPorId(99L);
     }
 }

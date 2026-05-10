@@ -73,4 +73,52 @@ public class CitaMedicaServiceTest {
         assertEquals("RESERVADA", resultado.get().getEstado());
         verify(repository, times(1)).findById(1L);
     }
+
+    @Test
+    @DisplayName("Debe retornar citas disponibles correctamente")
+    void testObtenerDisponibles() {
+        // Arrange
+        citaMock.setEstado("DISPONIBLE");
+        when(repository.findByEstado("DISPONIBLE")).thenReturn(List.of(citaMock));
+
+        // Act
+        List<CitaMedicaDTO> resultado = service.obtenerDisponibles();
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        assertEquals("DISPONIBLE", resultado.get(0).getEstado());
+        verify(repository, times(1)).findByEstado("DISPONIBLE");
+    }
+
+    @Test
+    @DisplayName("Debe programar una cita correctamente con estado RESERVADA")
+    void testProgramarCita() {
+        // Arrange
+        CitaMedicaDTO dto = new CitaMedicaDTO(
+                null, "Valentina Ríos", "22.333.444-5",
+                "Neurología", "Dr. Esteban Campos",
+                "2025-06-01", "10:00", null
+        );
+        CitaMedica citaGuardada = new CitaMedica();
+        citaGuardada.setId(7L);
+        citaGuardada.setNombrePaciente("Valentina Ríos");
+        citaGuardada.setRutPaciente("22.333.444-5");
+        citaGuardada.setEspecialidad("Neurología");
+        citaGuardada.setNombreMedico("Dr. Esteban Campos");
+        citaGuardada.setFecha("2025-06-01");
+        citaGuardada.setHora("10:00");
+        citaGuardada.setEstado("RESERVADA");
+
+        when(repository.save(any(CitaMedica.class))).thenReturn(citaGuardada);
+
+        // Act
+        CitaMedicaDTO resultado = service.programarCita(dto);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals("RESERVADA", resultado.getEstado());
+        assertEquals("Valentina Ríos", resultado.getNombrePaciente());
+        verify(repository, times(1)).save(any(CitaMedica.class));
+    }
 }
